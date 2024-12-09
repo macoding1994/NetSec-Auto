@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-6.0.dtd">
 <!-- eric project file for project main -->
-<!-- Saved: 2024-12-09, 02:03:48 -->
+<!-- Saved: 2024-12-09, 16:28:30 -->
 <!-- Copyright (C) 2024 ,  -->
 <Project version="6.0">
   <Language>en_US</Language>
@@ -14,9 +14,11 @@
   <TranslationPattern>venv/Lib/site-packages/eric6/i18n/eric6_%language%.qm</TranslationPattern>
   <Eol index="0"/>
   <Sources>
+    <Source>Ui_main.py</Source>
     <Source>__init__.py</Source>
     <Source>botpress.py</Source>
     <Source>demo.py</Source>
+    <Source>main.py</Source>
     <Source>venv/Lib/site-packages/PyQt5/__init__.py</Source>
     <Source>venv/Lib/site-packages/PyQt5/pylupdate_main.py</Source>
     <Source>venv/Lib/site-packages/PyQt5/pyrcc_main.py</Source>
@@ -2753,6 +2755,9 @@
     <Source>venv/Scripts/pip3-script.py</Source>
     <Source>venv/Scripts/pip3.6-script.py</Source>
   </Sources>
+  <Forms>
+    <Form>main.ui</Form>
+  </Forms>
   <Translations>
     <Translation>venv/Lib/site-packages/PyQt5/Qt5/translations/qscintilla_cs.qm</Translation>
     <Translation>venv/Lib/site-packages/PyQt5/Qt5/translations/qscintilla_de.qm</Translation>

@@ -126,7 +126,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "TextLabel"))
         self.pushButton.setText(_translate("MainWindow", "扫描"))
         self.label_2.setText(_translate("MainWindow", "检测名单"))
-        self.lineEdit.setText(_translate("MainWindow", "192.168.133.132"))
+        self.lineEdit.setText(_translate("MainWindow", "192.168.133.132-133"))
         self.radioButton.setText(_translate("MainWindow", "主域名"))
         self.radioButton_2.setText(_translate("MainWindow", "IP"))
         self.label_3.setText(_translate("MainWindow", "端口范围"))

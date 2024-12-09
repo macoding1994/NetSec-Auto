@@ -1,6 +1,7 @@
 import random
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, ALL_COMPLETED, wait
 
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QLabel, QWidget, QTreeWidgetItem
@@ -9,38 +10,53 @@ from Ui_main import Ui_MainWindow
 import nmap
 import datetime
 from data import create_table, insert_data
+from tool import resolv_ips
 
 
 class NmapWorkerThread(QThread):
     progress_signal = pyqtSignal(dict)
 
-    def __init__(self, parent=None, host=None, ports=None, arguments=None, domain="", infoSignal=None):
+    def __init__(self, parent=None, hosts=None, ports=None, arguments=None, domain="", infoSignal=None):
         super(QThread, self).__init__(parent)
 
-        self.nm = nmap.PortScanner()
-        self.scan_ip = host
         self.ports = ports
         self.domain = domain
         self.arguments = arguments
         self.infoSignal = infoSignal
 
+        self.scan_ip_list, _ = resolv_ips([hosts])
+
     def run(self):
+        all_task = []
+        # 使用tqdm创建一个进度条
+        with ThreadPoolExecutor(max_workers=12) as executor:
+            # 创建一个Future对象列表
+            for scan_ip in self.scan_ip_list:
+                # 提交任务到线程池
+                future = executor.submit(self.scanPort, self.domain, scan_ip, self.ports, self.arguments)
+                # 将Future对象添加到列表中
+                all_task.append(future)
+        wait(all_task, return_when=ALL_COMPLETED)
+
+    def scanPort(self, domain, scan_ip, ports, arguments):
         if self.infoSignal:
-            self.infoSignal.emit(f"[{datetime.datetime.now()}] scan {self.scan_ip} {self.ports}  {self.arguments}")
-        self.nm.scan(hosts=self.scan_ip, ports=self.ports, arguments=self.arguments)
+            self.infoSignal.emit(f"[{datetime.datetime.now()}] scan {scan_ip} {ports}  {arguments}")
+
+        nm = nmap.PortScanner()
+        nm.scan(hosts=scan_ip, ports=ports, arguments=arguments)
         try:
-            port_list = self.nm[self.scan_ip]['tcp'].keys()
+            port_list = nm[scan_ip]['tcp'].keys()
         except Exception as e:
             print(e)
         else:
             for port in port_list:
-                if self.nm[self.scan_ip].has_tcp(port):
-                    port_info = self.nm[self.scan_ip]['tcp'][port]
+                if nm[scan_ip].has_tcp(port):
+                    port_info = nm[scan_ip]['tcp'][port]
                     state = port_info.get('state', 'no')
-                    if self.nm[self.scan_ip].get("osmatch"):
+                    if nm[scan_ip].get("osmatch"):
                         os_info = ",".join(
                             f"{info['name']}({info['accuracy']}%)"
-                            for info in self.nm[self.scan_ip]["osmatch"]
+                            for info in nm[scan_ip]["osmatch"]
                         )
                     else:
                         os_info = ""
@@ -50,8 +66,8 @@ class NmapWorkerThread(QThread):
                         version = port_info.get('version', '2.0')
                         service, protocol = product, name
                         port_data = {
-                            "domain": self.domain,
-                            "ip": self.scan_ip,
+                            "domain": domain,
+                            "ip": scan_ip,
                             "port": port,
                             "service": service,
                             "protocol": protocol,
@@ -127,7 +143,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # 初始化工作线程
         self._thread = NmapWorkerThread(
-            host=self.lineEdit.text(),
+            hosts=self.lineEdit.text(),
             ports=self.lineEdit_2.text(),
             arguments=self.comboBox.currentText(),
             infoSignal=self.infoSignal
