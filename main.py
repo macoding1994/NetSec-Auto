@@ -14,7 +14,8 @@ from tool import resolv_ips
 
 
 class NmapWorkerThread(QThread):
-    progress_signal = pyqtSignal(dict)
+    data_signal = pyqtSignal(dict)
+    progress_signal = pyqtSignal(int)
 
     def __init__(self, parent=None, hosts=None, ports=None, arguments=None, domain="", infoSignal=None):
         super(QThread, self).__init__(parent)
@@ -36,6 +37,16 @@ class NmapWorkerThread(QThread):
                 future = executor.submit(self.scanPort, self.domain, scan_ip, self.ports, self.arguments)
                 # 将Future对象添加到列表中
                 all_task.append(future)
+            # 检查任务状态
+            while not all(future.done() for future in all_task):
+                is_done_task = 0
+                for future in all_task:
+                    if future.running():
+                        is_done_task += 0.3
+                    if future.done():
+                        is_done_task += 1
+                self.progress_signal.emit(int(is_done_task / len(all_task) * 100))
+                time.sleep(0.5)
         wait(all_task, return_when=ALL_COMPLETED)
 
     def scanPort(self, domain, scan_ip, ports, arguments):
@@ -76,11 +87,11 @@ class NmapWorkerThread(QThread):
                         }
                         time.sleep(random.randint(1, 3))
                         insert_data(port_data)
-                        self.progress_signal.emit(port_data)
+                        self.data_signal.emit(port_data)
 
 
 class SodanWorkerThread(QThread):
-    progress_signal = pyqtSignal(dict)
+    data_signal = pyqtSignal(dict)
 
     def __init__(self, parent=None, host=None, infoSignal=None):
         super(QThread, self).__init__(parent)
@@ -139,8 +150,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def getAssetInfo(self):
         # 禁用按钮，避免重复启动任务
         self.pushButton.setEnabled(False)
-        self.label.setText("任务进行中...")
-
         # 初始化工作线程
         self._thread = NmapWorkerThread(
             hosts=self.lineEdit.text(),
@@ -148,7 +157,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             arguments=self.comboBox.currentText(),
             infoSignal=self.infoSignal
         )
-        self._thread.progress_signal.connect(self.updateAssetTreeWidget)  # 连接信号到更新函数
+        self._thread.data_signal.connect(self.updateAssetTreeWidget)  # 连接信号到更新函数
+        self._thread.progress_signal.connect(self.updateProgress)  # 连接信号到更新函数
         self._thread.finished.connect(self.taskFinished)  # 线程结束后启用按钮
         self._thread.start()  # 开始线程
 
@@ -206,9 +216,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 展开顶级节点以显示子节点
             existing_node.setExpanded(True)
 
+    def updateProgress(self, value):
+        # 更新进度条值
+        self.progressBar.setValue(value)
+
     def taskFinished(self):
         """任务完成后的处理"""
         self.pushButton.setEnabled(True)  # 启用按钮
+        self.progressBar.setValue(100)
 
     def infoshow(self, res):
         if isinstance(res, str):
