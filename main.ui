@@ -41,7 +41,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="configTab">
        <attribute name="title">
@@ -58,7 +58,7 @@
         <item row="0" column="1">
          <widget class="QLineEdit" name="lineEdit">
           <property name="text">
-           <string>192.168.133.132-133</string>
+           <string>13.126.139.188</string>
           </property>
          </widget>
         </item>
@@ -216,6 +216,21 @@
          <widget class="QTableWidget" name="tableWidget_2">
           <column>
            <property name="text">
+            <string>ip</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>lat</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>lon</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
             <string>cve_id</string>
            </property>
           </column>
@@ -226,17 +241,17 @@
           </column>
           <column>
            <property name="text">
-            <string>cve_severity</string>
+            <string>cve_cvss</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>cve_description</string>
+            <string>cve_cvss3</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>cve_solution</string>
+            <string>cve_summary</string>
            </property>
           </column>
          </widget>

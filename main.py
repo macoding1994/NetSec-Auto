@@ -4,37 +4,38 @@ import time
 from concurrent.futures import ThreadPoolExecutor, ALL_COMPLETED, wait
 
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QLabel, QWidget, QTreeWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QLabel, QWidget, QTreeWidgetItem, \
+    QTableWidgetItem
 from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
 from Ui_main import Ui_MainWindow
 import nmap
 import datetime
 from data import create_table, insert_data
+from myshodan import get_host_info, get_vulnerabilities_info
 from tool import resolv_ips
 
 
-class NmapWorkerThread(QThread):
+class BaseWorkerThread(QThread):
     data_signal = pyqtSignal(dict)
     progress_signal = pyqtSignal(int)
 
     def __init__(self, parent=None, hosts=None, ports=None, arguments=None, domain="", infoSignal=None):
         super(QThread, self).__init__(parent)
-
         self.ports = ports
         self.domain = domain
         self.arguments = arguments
         self.infoSignal = infoSignal
-
         self.scan_ip_list, _ = resolv_ips([hosts])
+        print(self.scan_ip_list)
 
     def run(self):
         all_task = []
         # 使用tqdm创建一个进度条
-        with ThreadPoolExecutor(max_workers=12) as executor:
+        with ThreadPoolExecutor(max_workers=4) as executor:
             # 创建一个Future对象列表
             for scan_ip in self.scan_ip_list:
                 # 提交任务到线程池
-                future = executor.submit(self.scanPort, self.domain, scan_ip, self.ports, self.arguments)
+                future = executor.submit(self.scan, self.domain, scan_ip, self.ports, self.arguments)
                 # 将Future对象添加到列表中
                 all_task.append(future)
             # 检查任务状态
@@ -46,15 +47,17 @@ class NmapWorkerThread(QThread):
                     if future.done():
                         is_done_task += 1
                 self.progress_signal.emit(int(is_done_task / len(all_task) * 100))
-                time.sleep(0.5)
+                time.sleep(0.3)
         wait(all_task, return_when=ALL_COMPLETED)
 
-    def scanPort(self, domain, scan_ip, ports, arguments):
-        if self.infoSignal:
-            self.infoSignal.emit(f"[{datetime.datetime.now()}] scan {scan_ip} {ports}  {arguments}")
 
+class NmapWorkerThread(BaseWorkerThread):
+
+    def scan(self, domain, scan_ip, ports, arguments):
         nm = nmap.PortScanner()
         nm.scan(hosts=scan_ip, ports=ports, arguments=arguments)
+        if self.infoSignal:
+            self.infoSignal.emit(f"[{datetime.datetime.now()}] Namp scan:   {nm.command_line()}")
         try:
             port_list = nm[scan_ip]['tcp'].keys()
         except Exception as e:
@@ -76,7 +79,7 @@ class NmapWorkerThread(QThread):
                         product = port_info.get('product', '')
                         version = port_info.get('version', '2.0')
                         service, protocol = product, name
-                        port_data = {
+                        data = {
                             "domain": domain,
                             "ip": scan_ip,
                             "port": port,
@@ -86,23 +89,37 @@ class NmapWorkerThread(QThread):
                             "os_info": os_info,
                         }
                         time.sleep(random.randint(1, 3))
-                        insert_data(port_data)
-                        self.data_signal.emit(port_data)
+                        insert_data(data)
+                        self.data_signal.emit(data)
 
 
-class SodanWorkerThread(QThread):
-    data_signal = pyqtSignal(dict)
+class SodanWorkerThread(BaseWorkerThread):
 
-    def __init__(self, parent=None, host=None, infoSignal=None):
-        super(QThread, self).__init__(parent)
-
-        self.nm = nmap.PortScanner()
-        self.scan_ip = host
-        self.infoSignal = infoSignal
-
-    def run(self):
+    def scan(self, domain, scan_ip, ports, arguments):
         if self.infoSignal:
-            self.infoSignal.emit(f"[{datetime.datetime.now()}] scan {self.scan_ip} {self.ports}  {self.arguments}")
+            self.infoSignal.emit(f"[{datetime.datetime.now()}] shodan scan:   {scan_ip} ")
+        info = get_host_info(scan_ip)
+        if "vulns" in info:
+            for cve_id in info['vulns']:
+                cve_name, cve_id, cve_cvss, cve_cvss3, cve_summary, cve_references = get_vulnerabilities_info(cve_id)
+                data = {
+                    "ip": scan_ip,
+                    "lat": info['latitude'],
+                    "lon": info['longitude'],
+                    "cve_id": cve_id,
+                    "cve_name": cve_name,
+                    "cve_cvss": cve_cvss,
+                    "cve_cvss3": cve_cvss3,
+                    "cve_summary": cve_summary,
+                    "cve_references": cve_references,
+                }
+                self.data_signal.emit(data)
+        else:
+            data = {
+                "ip": scan_ip,
+                "lat": info['latitude'],
+                "lon": info['longitude'],
+            }
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -141,11 +158,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     @pyqtSlot()
     def on_pushButton_clicked(self):
-        self.getAssetInfo()
+        # self.getAssetInfo()
+        self.getVulnInfo()
 
     def getVulnInfo(self):
+        # 禁用按钮，避免重复启动任务
+        self.pushButton.setEnabled(False)
         # 初始化工作线程
-        pass
+        self._thread1 = SodanWorkerThread(
+            hosts=self.lineEdit.text(),
+            infoSignal=self.infoSignal
+        )
+        self._thread1.data_signal.connect(self.updateVulnTreeWidget)  # 连接信号到更新函数
+        self._thread1.finished.connect(self.taskFinished)  # 线程结束后启用按钮
+        self._thread1.start()  # 开始线程
 
     def getAssetInfo(self):
         # 禁用按钮，避免重复启动任务
@@ -161,6 +187,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._thread.progress_signal.connect(self.updateProgress)  # 连接信号到更新函数
         self._thread.finished.connect(self.taskFinished)  # 线程结束后启用按钮
         self._thread.start()  # 开始线程
+
+    def updateVulnTreeWidget(self, value):
+        """更新任务进度"""
+        self.infoSignal.emit(f"[{datetime.datetime.now()}] {value}")
+
+        current_colum = self.tableWidget_2.columnCount()
+        current_row = self.tableWidget_2.rowCount()
+        self.tableWidget_2.insertRow(current_row)
+        for col_idx, cell_data in enumerate([str(value[k]) for k in value][:current_colum]):
+            self.tableWidget_2.setItem(current_row, col_idx, QTableWidgetItem(cell_data))
 
     def updateAssetTreeWidget(self, value):
         """更新任务进度"""

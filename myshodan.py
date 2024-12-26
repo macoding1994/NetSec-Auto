@@ -25,7 +25,17 @@ def get_cve_search_info(cveid: str):
 
 
 def parse_cve_search_data(json_data):
-    return json_data
+    key_list = ["cve_name", "cve_id", "cve_cvss", "cve_cvss3", "cve_summary", "cve_references"]
+    # cve_name, cve_id, cve_cvss, cve_cvss3, cve_description, cve_solution
+    cell = []
+    for header in key_list:
+        fh, sh = header.split("_")
+        if sh and sh in json_data:
+            cell.append(f"{json_data[sh]}")
+        else:
+            cell.append(f"-")
+    print(cell)
+    return cell
 
 
 def get_vulnerabilities_info(cveid: str):
@@ -39,5 +49,29 @@ def get_host_info(host):
     except Exception as e:
         print(f"Error fetching host info: {e}")
         return {}
-    print(f"find host: [{host}]!")
+    # print(f"find host: [{host}]!")
     return result
+
+def get_dvwa_ip():
+    try:
+        api = Shodan(SHODAN_API_KEY)
+        result = api.count('http.title:"dvwa"', facets=['ip'])
+        return [i['value'] for i in result['facets']['ip']]
+    except Exception as e:
+        print(f"Error fetching DVWA IPs: {e}")
+        return []
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    for ip in get_dvwa_ip():
+        print(ip)
+        data = get_host_info(ip)
+        if "vulns" in data:
+            print(data['vulns'])
+    # print(get_vulnerabilities_info("CVE-2024-38474"))
