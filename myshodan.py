@@ -69,9 +69,9 @@ def get_dvwa_ip():
 
 
 if __name__ == '__main__':
-    for ip in get_dvwa_ip():
-        print(ip)
-        data = get_host_info(ip)
-        if "vulns" in data:
-            print(data['vulns'])
-    # print(get_vulnerabilities_info("CVE-2024-38474"))
+    # for ip in get_dvwa_ip():
+    #     print(ip)
+    #     data = get_host_info(ip)
+    #     if "vulns" in data:
+    #         print(data['vulns'])
+    print(get_vulnerabilities_info("CVE-2024-38474"))

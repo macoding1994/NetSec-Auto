@@ -46,3 +46,15 @@ handle them than to perform quick network analytics. Your tasks are:
 
 * Generate appropriate statistics based on findings from Part 1 and/or 2 (5 marks)
 *  Map the statistics to appropriate visualisations (5 marks)
+
+
+
+
+
+#### TODOLIST
+
+* 数据同步到BOT上
+* 漏洞数据SQL
+* 数据展示
+* 邮件配置
+* 定时任务

@@ -20,7 +20,7 @@
       <property name="title">
        <string>GroupBox</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_8">
+      <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
         <widget class="QProgressBar" name="progressBar">
          <property name="value">
@@ -31,7 +31,42 @@
        <item row="0" column="1">
         <widget class="QPushButton" name="pushButton">
          <property name="text">
-          <string>扫描</string>
+          <string>端口扫描</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>漏洞扫描</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="pushButton_5">
+         <property name="text">
+          <string>开启任务</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="pushButton_4">
+         <property name="text">
+          <string>获取任务</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QPushButton" name="pushButton_3">
+         <property name="text">
+          <string>上传数据</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QPushButton" name="pushButton_6">
+         <property name="text">
+          <string>生成chat</string>
          </property>
         </widget>
        </item>
@@ -41,13 +76,13 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="configTab">
        <attribute name="title">
         <string>任务配置</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_4">
+       <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
@@ -55,79 +90,35 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="0" column="1" colspan="2">
          <widget class="QLineEdit" name="lineEdit">
           <property name="text">
            <string>13.126.139.188</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="title">
-           <string/>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QRadioButton" name="radioButton">
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>主域名</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QRadioButton" name="radioButton_2">
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>IP</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
            <string>端口范围</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="1" column="2">
          <widget class="QLineEdit" name="lineEdit_2">
           <property name="text">
            <string>1-20000</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>NMAP 命令</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="2" column="2">
          <widget class="QComboBox" name="comboBox">
           <item>
            <property name="text">
@@ -146,6 +137,48 @@
           </item>
          </widget>
         </item>
+        <item row="3" column="0" colspan="2">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>HOST</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLineEdit" name="lineEdit_3">
+          <property name="text">
+           <string>http://192.168.133.132:18002</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>USERNAME</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLineEdit" name="lineEdit_4">
+          <property name="text">
+           <string>admin</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>PASSWORD</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QLineEdit" name="lineEdit_5">
+          <property name="text">
+           <string>048c60971e056793518850b8f1a5bd56bab153a12f303d1296d2b4844330f19c3ce98c8972f908722f9e80aa371d9e4a3667d64f9f57f6d3483b63a647dd3270af0f6dc59fb294fd65bcf2dbe03ca6d96e726fc931eb65f280c7e7a42025f422180c2c1b1253a82873</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab">
@@ -154,7 +187,43 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
-         <widget class="QTableWidget" name="tableWidget"/>
+         <widget class="QTableWidget" name="tableWidget">
+          <column>
+           <property name="text">
+            <string>id</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>taskname</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>domain</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>state</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>actionstime</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>actionetime</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>progress</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -267,6 +336,11 @@
          <widget class="QTextBrowser" name="textBrowser"/>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>图表</string>
+       </attribute>
       </widget>
      </widget>
     </item>
