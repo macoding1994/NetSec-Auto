@@ -49,12 +49,13 @@ handle them than to perform quick network analytics. Your tasks are:
 
 
 
+### data flow
 
+![charts.drawio](.\charts.drawio.png)
 
-#### TODOLIST
+#### bootpress command
 
-* 数据同步到BOT上
-* 漏洞数据SQL
-* 数据展示
-* 邮件配置
-* 定时任务
+```
+Which IPs, ports, and services have I discovered?
+What vulnerabilities exist for 192.168.133.133?
+```

@@ -18,55 +18,34 @@
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>GroupBox</string>
+       <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <widget class="QProgressBar" name="progressBar">
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>端口扫描</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>漏洞扫描</string>
+          <string>get task list</string>
          </property>
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QPushButton" name="pushButton_5">
-         <property name="text">
-          <string>开启任务</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="text">
-          <string>获取任务</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QPushButton" name="pushButton_3">
-         <property name="text">
-          <string>上传数据</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
         <widget class="QPushButton" name="pushButton_6">
          <property name="text">
-          <string>生成chat</string>
+          <string>charts</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pushButton_5">
+         <property name="text">
+          <string>scan</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="pushButton_3">
+         <property name="text">
+          <string>upload  data(botprsee)</string>
          </property>
         </widget>
        </item>
@@ -76,17 +55,17 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>5</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="configTab">
        <attribute name="title">
-        <string>任务配置</string>
+        <string>task config</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>检测名单</string>
+           <string>target</string>
           </property>
          </widget>
         </item>
@@ -100,7 +79,7 @@
         <item row="1" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>端口范围</string>
+           <string>port arange</string>
           </property>
          </widget>
         </item>
@@ -114,7 +93,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>NMAP 命令</string>
+           <string>nmap command</string>
           </property>
          </widget>
         </item>
@@ -140,7 +119,7 @@
         <item row="3" column="0" colspan="2">
          <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>HOST</string>
+           <string>scanner host</string>
           </property>
          </widget>
         </item>
@@ -154,7 +133,7 @@
         <item row="4" column="0" colspan="2">
          <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>USERNAME</string>
+           <string>scanner username</string>
           </property>
          </widget>
         </item>
@@ -168,7 +147,7 @@
         <item row="5" column="0" colspan="2">
          <widget class="QLabel" name="label_7">
           <property name="text">
-           <string>PASSWORD</string>
+           <string>scanner pwd</string>
           </property>
          </widget>
         </item>
@@ -183,7 +162,7 @@
       </widget>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>任务列表</string>
+        <string>task list</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
@@ -232,7 +211,7 @@
         <string/>
        </property>
        <attribute name="title">
-        <string>资产信息</string>
+        <string>asset data</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
@@ -278,7 +257,7 @@
       </widget>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
-        <string>漏洞数据</string>
+        <string>vuln data</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="0" column="0">
@@ -329,7 +308,7 @@
       </widget>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
-        <string>日志信息</string>
+        <string>log</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
@@ -339,7 +318,7 @@
       </widget>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">
-        <string>图表</string>
+        <string>charts</string>
        </attribute>
       </widget>
      </widget>

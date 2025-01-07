@@ -1,3 +1,5 @@
+import copy
+import json
 import random
 import sys
 import time
@@ -13,6 +15,8 @@ from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QTimer, QUrl
 from Ui_main import Ui_MainWindow
 import nmap
 import datetime
+
+from botpress import Botpress
 from data import create_table, insert_port_data, insert_shodan_data
 from myshodan import get_host_info, get_vulnerabilities_info
 from tool import resolv_ips, login, call_scanner_api, fetch_task_list, fetch_task_vulnerabilities, fetch_task_ip_assets, \
@@ -172,6 +176,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.refresh_timer.timeout.connect(self.refresh_task_list)
         self.existing_ids = set()  # 用于存储已显示的任务 ID
 
+        self.bot = Botpress("config.json")
+        self.vuln_tables_data = []
+        self.asset_tables_data = []
+
     def initAseertTree(self):
         pass
 
@@ -216,6 +224,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not hasattr(self, 'vuln_summary'):
             self.vuln_summary = {}
 
+        value1 = copy.deepcopy(value)
+        del value1['id']
+        self.vuln_tables_data.append(self.value2str(value1))
         current_colum = self.tableWidget_2.columnCount()
         current_row = self.tableWidget_2.rowCount()
         self.tableWidget_2.insertRow(current_row)
@@ -242,7 +253,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 初始化资产统计字典
         if not hasattr(self, 'asset_summary'):
             self.asset_summary = {}
-
+        value1 = copy.deepcopy(value)
+        del value1['id']
+        self.asset_tables_data.append(self.value2str(value1))
         # 获取数据
         domain = value.get('domain', '')
         ip = value['ip']
@@ -317,6 +330,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 打印统计结果（可选，调试时使用）
         print("资产统计：", self.asset_summary)
 
+    def value2str(self, data_dict):
+        return {
+            k: str(data_dict[k])[:255]
+            for k in data_dict
+        }
+
     def updateProgress(self, value):
         # 更新进度条值
         self.progressBar.setValue(value)
@@ -345,13 +364,45 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.token = response["token"]
                 self.cookies = response["cookies"]
 
+    def get_properties(self, data_list):
+        properties_list = [k for k in data_list[0]]
+        return {
+            p: {
+                "type": "string",
+                "x-zui": {
+                    "index": properties_list.index(p),
+                    "typings": "",
+                    "searchable": True
+                },
+                "nullable": True
+            }
+
+            for p in properties_list
+        }
+
     @pyqtSlot()
     def on_pushButton_3_clicked(self):
         """
-        Slot documentation goes here.
+        update bootpress
+        :return:
         """
-        # TODO: not implemented yet
-        raise NotImplementedError
+        vuln_tables = "vulnTable"
+        asset_tables = "assetTable"
+
+        for tables in self.bot.get_tables_list()['tables']:
+            if tables["name"] in [vuln_tables, asset_tables]:
+                self.bot.delete_table_rows(tables["name"])
+        print("Creating tables...")
+        # self.bot.create_table(asset_tables, self.get_properties(self.asset_tables_data))
+        # self.bot.create_table(vuln_tables, self.get_properties(self.vuln_tables_data))
+
+        chunk_size = 5
+        for i in range(0, len(self.vuln_tables_data), chunk_size):
+            chunk = self.vuln_tables_data[i:i + chunk_size]
+            print("Vulnerability rows added:", json.dumps(chunk, indent=2))
+            self.bot.add_rows(vuln_tables, {"rows": chunk})
+        # self.bot.add_rows(vuln_tables, {"rows": self.vuln_tables_data})
+        self.bot.add_rows(asset_tables, {"rows": self.asset_tables_data})
 
     def refresh_task_list(self):
         """
