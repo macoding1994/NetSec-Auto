@@ -10,15 +10,15 @@
 
 ##### task_list
 
-![flow](https://github.com/macoding1994/NetSec-Auto/blob/main/img/task_list.png)
+![flow](https://github.com/macoding1994/NetSec-Auto/blob/main/img/task_list.jpg)
 
 ##### assert_data
 
-![flow](https://github.com/macoding1994/NetSec-Auto/blob/main/img/assert_data.png)
+![flow](https://github.com/macoding1994/NetSec-Auto/blob/main/img/assert_data.jpg)
 
 ##### vuln_data
 
-![flow](https://github.com/macoding1994/NetSec-Auto/blob/main/img/vuln_data.png)
+![flow](https://github.com/macoding1994/NetSec-Auto/blob/main/img/vuln_data.jpg)
 
 #### bootpress command
 
